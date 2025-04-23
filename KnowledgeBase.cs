@@ -9,23 +9,41 @@ namespace CyberSecurityBot
         private static readonly string connectionString = "Data Source=knowledge.db;Version=3;";
 
         public static string GetAnswer(string input)
+{
+    using var connection = new SQLiteConnection(connectionString);
+    connection.Open();
+
+    string query = "SELECT Question, Answer FROM Knowledge";
+    using var command = new SQLiteCommand(query, connection);
+    using var reader = command.ExecuteReader();
+
+    string bestAnswer = GetFallbackResponse();
+    int highestScore = 0;
+
+    string[] inputWords = input.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+    while (reader.Read())
+    {
+        string question = reader.GetString(0).ToLower();
+        string answer = reader.GetString(1);
+
+        int score = 0;
+        foreach (string word in inputWords)
         {
-            using var connection = new SQLiteConnection(connectionString);
-            connection.Open();
-
-            string query = "SELECT Answer FROM Knowledge WHERE LOWER(@keyword) LIKE '%' || LOWER(Question) || '%' LIMIT 1";
-
-            using var command = new SQLiteCommand(query, connection);
-            command.Parameters.AddWithValue("@keyword", input);
-
-            using var reader = command.ExecuteReader();
-            if (reader.Read())
-            {
-                return reader.GetString(0);
-            }
-
-            return GetFallbackResponse();
+            if (question.Contains(word))
+                score++;
         }
+
+        if (score > highestScore)
+        {
+            highestScore = score;
+            bestAnswer = answer;
+        }
+    }
+
+    return bestAnswer;
+}
+
 
         public static List<string> GetAllQuestions()
         {
