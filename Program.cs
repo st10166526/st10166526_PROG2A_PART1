@@ -101,7 +101,7 @@ static void PlayGreeting()
         });
 
         // Print subtitle as typing effect while audio plays
-        PrintWithTypingEffect(subtitle, 20);
+        PrintWithTypingEffect(subtitle, 15);
     }
     catch (Exception ex)
     {
