@@ -232,7 +232,7 @@ INSERT INTO Knowledge (Keyword, Answer, Category) VALUES
   ('how to prevent malware', 
    '1) Keep OS & apps updated.
     2) Use reputable antivirus.
-    3) Don’t open unknown email attachments.
+    3) Don not open unknown email attachments.
     4) Only download software from official sources.
     5) Enable your firewall.',
    'Malware');
@@ -288,3 +288,19 @@ INSERT INTO Knowledge (Keyword, Answer, Category) VALUES
   ('how to report phishing', 
    'Forward phishing emails to your email provider (e.g. phishing@domain.com), report to anti-phishing orgs, and inform your IT department.',
    'Phishing');
+
+
+   -- Breach Recovery Steps
+INSERT INTO Knowledge (Keyword, Answer, Category) VALUES
+  ('breach-step1',
+   '1) Immediately change all passwords, run security scans, enable 2FA, review account logs, and notify affected contacts if needed.',
+   'Breach'),
+  ('breach-step2',
+   '2) Monitor your credit reports and bank statements for the next 90 days.',
+   'Breach'),
+  ('breach-step3',
+   '3) Check for unknown devices in your account security settings and remove them.',
+   'Breach'),
+  ('breach-step4',
+   '4) Update your security questions and answers to something no one else knows.',
+   'Breach');

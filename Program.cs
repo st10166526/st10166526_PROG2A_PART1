@@ -9,11 +9,11 @@ namespace CyberSecurityBot
 {
     class Program
     {
-        private const int GREETING_DELAY = 35;
+        private const int GREETING_DELAY = 63;
 
         static List<string> conversationHistory = new();
-        static string lastCategory = null;
-        static string lastAnswer   = null;
+        static string? lastCategory = null;
+        static string? lastAnswer   = null;
 
         static void Main(string[] args)
         {
@@ -71,7 +71,7 @@ namespace CyberSecurityBot
                     var tips = KnowledgeBase.GetRelatedTips(lastCategory);
                     if (tips.Count > 0)
                     {
-                        int idx = tips.IndexOf(lastAnswer);
+                        int idx = lastAnswer != null ? tips.IndexOf(lastAnswer) : -1;
                         string next = (idx >= 0 && idx + 1 < tips.Count)
                                       ? tips[idx + 1]
                                       : tips[0];
@@ -184,7 +184,7 @@ namespace CyberSecurityBot
             Console.WriteLine();
         }
 
-        static void PrintDivider(string title = null)
+        static void PrintDivider(string? title = null)
         {
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("\n" + new string('═', 50));

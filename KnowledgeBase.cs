@@ -69,11 +69,11 @@ namespace CyberSecurityBot
             // 3) FUZZY SCORING FOR EVERYTHING ELSE
             var all = GetAllEntries().Where(e => e.Category != "General").ToList();
             if (!all.Any())
-                return (GetFallback(), null);
+                return (GetFallback(), string.Empty);
 
             double bestScore = 0;
             string bestAns   = GetFallback();
-            string bestCat   = null;
+            string bestCat   = string.Empty;
 
             foreach (var e in all)
             {
@@ -93,7 +93,7 @@ namespace CyberSecurityBot
             }
 
             if (bestScore < 0.3)
-                return (GetFallback(), null);
+                return (GetFallback(), string.Empty);
 
             return (bestAns, bestCat);
         }
