@@ -1,7 +1,7 @@
 # ST10166526_PROG2A_PART1
 # CyberSecurityBot
 
-![.NET Build & Test](https://github.com/<your-username>/ST10166526_PROG2A_PART1/actions/workflows/dotnet.yml/badge.svg)
+![.NET Build & Test](https://github.com/st10166526/ST10166526_PROG2A_PART1/actions/workflows/dotnet.yml/badge.svg)
 
 A **console-based** cybersecurity assistant built in C# and .NET, featuring:
 
@@ -21,8 +21,8 @@ A **console-based** cybersecurity assistant built in C# and .NET, featuring:
 
 ## 📸 Screenshots
 
-> ![Alt text](C:\Users\Client\Documents\CyberSecurityBot\docs\All_checks_passed.png)
-> ![Alt text](C:\Users\Client\Documents\CyberSecurityBot\docs\CheckedRefresh.png)
+> ![Checks Passed](C:\Users\Client\Documents\CyberSecurityBot\docs\screenshots\All_checks_passed.png)
+> ![Confirm Checks Passed](C:\Users\Client\Documents\CyberSecurityBot\docs\screenshots\CheckedRefresh.png)
 
 
 ---
