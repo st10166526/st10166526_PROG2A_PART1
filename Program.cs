@@ -9,26 +9,27 @@ namespace CyberSecurityBot
 {
     class Program
     {
-        // You can tweak this to slow down or speed up the greeting text
-        private const int GREETING_TYPING_DELAY = 55;
+        private const int GREETING_DELAY = 35;
 
-        // Conversation memory
         static List<string> conversationHistory = new();
-        static string lastTopic = string.Empty;
+        static string lastCategory = null;
+        static string lastAnswer   = null;
 
         static void Main(string[] args)
         {
             DatabaseSetup.Initialize();
             Console.Title = "Cybersecurity Awareness Bot";
 
-            // 1. Audio + Typed Greeting
-            string greetingText = "Hello! Welcome to the Cybersecurity Awareness Bot. I'm here to help you stay informed, and safe online.";
-            PlayGreetingWithText(greetingText, GREETING_TYPING_DELAY);
+            // 1) Play & type the greeting
+            string greetingText = 
+                "Hello! Welcome to the Cybersecurity Awareness Bot. " +
+                "I’m here to help you stay safe online.";
+            PlayGreetingWithText(greetingText, GREETING_DELAY);
 
-            // 2. ASCII Banner
+            // 2) ASCII banner
             DisplayWelcome();
 
-            // 3. Name & Personalized Welcome
+            // 3) Ask for name
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Write("\nWhat is your name? ");
             Console.ResetColor();
@@ -37,16 +38,17 @@ namespace CyberSecurityBot
             Console.WriteLine();
             PrintWithTypingEffect(
                 $"Hello {name}, I'm your friendly cybersecurity assistant!\n" +
-                $"Type a question (e.g. \"How are you?\"), or 'exit' to quit.\n"
+                "Type a question (e.g. \"How are you?\"), or 'exit' to quit.\n"
             );
 
-            // 4. Main Loop
+            // 4) REPL loop
             while (true)
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.Write("\nYou: ");
                 Console.ResetColor();
                 string input = Console.ReadLine()?.Trim() ?? "";
+                conversationHistory.Add(input);
 
                 if (string.IsNullOrEmpty(input))
                 {
@@ -54,78 +56,94 @@ namespace CyberSecurityBot
                     continue;
                 }
 
-                conversationHistory.Add(input);
-
-                // Exit
                 if (input.Equals("exit", StringComparison.OrdinalIgnoreCase))
                 {
                     Success("Goodbye! Stay cyber safe out there.");
                     break;
                 }
 
-                // List topics
-                if (input.Equals("/list", StringComparison.OrdinalIgnoreCase))
+                // Slash‐commands
+                if (HandleSlashCommands(input)) continue;
+
+                // 5) Follow‐up: only when user explicitly asks “what else…”
+                if (IsFollowUp(input) && lastCategory != null)
                 {
-                    PrintDivider("🧠 I can help with these topics:");
-                    foreach (var topic in KnowledgeBase.GetAllQuestions())  // Ensure this uses SELECT DISTINCT
-                        Console.WriteLine($"• {topic}");
-                    PrintDivider();
-                    continue;
+                    var tips = KnowledgeBase.GetRelatedTips(lastCategory);
+                    if (tips.Count > 0)
+                    {
+                        int idx = tips.IndexOf(lastAnswer);
+                        string next = (idx >= 0 && idx + 1 < tips.Count)
+                                      ? tips[idx + 1]
+                                      : tips[0];
+                        lastAnswer = next;
+                        PrintWithTypingEffect(next);
+                        continue;
+                    }
                 }
 
-                // Add new Q&A
-                if (input.Equals("/add", StringComparison.OrdinalIgnoreCase))
-                {
+                // 6) Normal lookup
+                var (answer, category) = KnowledgeBase.LookupWithCategory(input);
+                lastAnswer   = answer;
+                lastCategory = category;
+                PrintWithTypingEffect(answer);
+            }
+        }
+
+        static bool HandleSlashCommands(string input)
+        {
+            switch (input.ToLower())
+            {
+                case "/list":
+                    PrintDivider("🧠 Topics I can help with:");
+                    foreach (var t in KnowledgeBase.GetAllQuestions())
+                        Console.WriteLine($"• {t}");
+                    PrintDivider();
+                    return true;
+
+                case "/add":
                     PrintDivider("📝 Add a new topic");
                     Console.Write("Question keyword: ");
                     string q = Console.ReadLine()?.Trim() ?? "";
                     Console.Write("Answer: ");
                     string a = Console.ReadLine()?.Trim() ?? "";
-
                     bool ok = KnowledgeBase.InsertEntry(q, a);
                     if (ok) Success("Added successfully!");
-                    else    Warn("Failed to add entry.");
+                    else    Warn("Failed to add.");
                     PrintDivider();
-                    continue;
-                }
+                    return true;
 
-                // Clear memory
-                if (input.Equals("/reset", StringComparison.OrdinalIgnoreCase))
-                {
-                    lastTopic = string.Empty;
+                case "/history":
+                    PrintDivider("🕘 Conversation History");
+                    foreach (var m in conversationHistory)
+                        Console.WriteLine($"• {m}");
+                    PrintDivider();
+                    return true;
+
+                case "/reset":
+                    lastCategory = null;
+                    lastAnswer   = null;
                     conversationHistory.Clear();
                     Info("Memory cleared.");
-                    continue;
-                }
+                    return true;
 
-                // Show history
-                if (input.Equals("/history", StringComparison.OrdinalIgnoreCase))
-                {
-                    PrintDivider("🕘 Conversation History");
-                    foreach (var msg in conversationHistory)
-                        Console.WriteLine($"• {msg}");
-                    PrintDivider();
-                    continue;
-                }
-
-                // Context-aware follow-ups
-                string combined = input;
-                if (IsVague(input) && !string.IsNullOrWhiteSpace(lastTopic) && ShouldCombine(input, lastTopic))
-                    combined = lastTopic + " " + input;
-
-                // Get answer
-                string answer = KnowledgeBase.GetAnswer(combined);
-                PrintWithTypingEffect(answer);
-
-                // Remember for next context
-                if (!input.StartsWith("/") && input.Length > 5)
-                    lastTopic = input;
+                default:
+                    return false;
             }
+        }
+
+        static bool IsFollowUp(string input)
+        {
+            string lower = input.ToLower();
+            return lower.Contains("what else")
+                || lower.Contains("anything else")
+                || lower.Contains("what should i do")
+                || lower.Contains("next step")
+                || lower.Equals("what else");
         }
 
         static void PlayGreetingWithText(string message, int delay)
         {
-            var audioThread = new Thread(() =>
+            Thread audio = new(() =>
             {
                 try
                 {
@@ -135,14 +153,11 @@ namespace CyberSecurityBot
                         player.PlaySync();
                     }
                 }
-                catch
-                {
-                    Warn("Could not play greeting audio.");
-                }
+                catch { Warn("Could not play greeting audio."); }
             });
-            audioThread.Start();
+            audio.Start();
             PrintWithTypingEffect(message, delay);
-            audioThread.Join();
+            audio.Join();
         }
 
         static void DisplayWelcome()
@@ -154,7 +169,7 @@ namespace CyberSecurityBot
             }
             catch
             {
-                Console.WriteLine("=== Welcome to CyberSecurityBot ===");
+                Console.WriteLine("=== Cybersecurity Awareness Bot ===");
             }
             Console.ResetColor();
         }
@@ -181,49 +196,10 @@ namespace CyberSecurityBot
             Console.ResetColor();
         }
 
-        static bool IsVague(string input)
-        {
-            string[] vague = { "what", "how", "why", "can", "should", "is", "are", "do" };
-            var lw = input.ToLower();
-            foreach (var v in vague) if (lw.StartsWith(v)) return true;
-            return input.Length < 8;
-        }
-
-        static bool ShouldCombine(string current, string previous)
-        {
-            var stop = new HashSet<string>
-            {
-                "how","do","is","my","what","should","can","i","you","the","a","an","it","to"
-            };
-            var cur = current.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            var prev = previous.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            foreach (var w in cur)
-            {
-                if (stop.Contains(w)) continue;
-                foreach (var p in prev)
-                    if (!stop.Contains(p) && w == p)
-                        return true;
-            }
-            return false;
-        }
-
-        static void Warn(string msg)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("⚠️ " + msg);
-            Console.ResetColor();
-        }
-        static void Success(string msg)
-        {
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("✅ " + msg);
-            Console.ResetColor();
-        }
-        static void Info(string msg)
-        {
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("🔄 " + msg);
-            Console.ResetColor();
-        }
+        static void Warn(string msg)    { Console.ForegroundColor = ConsoleColor.Red;    Console.WriteLine("⚠️ " + msg); Console.ResetColor(); }
+        static void Success(string msg) { Console.ForegroundColor = ConsoleColor.Green;  Console.WriteLine("✅ " + msg); Console.ResetColor(); }
+        static void Info(string msg)    { Console.ForegroundColor = ConsoleColor.Cyan;   Console.WriteLine("🔄 " + msg); Console.ResetColor(); }
     }
 }
+
+

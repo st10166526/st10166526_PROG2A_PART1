@@ -1,44 +1,27 @@
 using System;
 using System.Data.SQLite;
 using System.IO;
-using CyberSecurityBot;
-
 
 namespace CyberSecurityBot
 {
     public static class DatabaseSetup
     {
-        private static readonly string dbPath = "knowledge.db";
-        private static readonly string sqlPath = "CreateDB.sql";
+        private const string DbFile  = "knowledge.db";
+        private const string SqlFile = "CreateDB.sql";
 
         public static void Initialize()
         {
-            if (!File.Exists(dbPath))
+            if (!File.Exists(DbFile))
             {
-                Console.WriteLine("⚠️ Database file not found. Creating a new one...");
-                SQLiteConnection.CreateFile(dbPath);
-            }
+                // 1) Create empty DB
+                SQLiteConnection.CreateFile(DbFile);
 
-            using var connection = new SQLiteConnection($"Data Source={dbPath};Version=3;");
-            connection.Open();
-
-            // Check if table exists
-            var checkCommand = new SQLiteCommand("SELECT name FROM sqlite_master WHERE type='table' AND name='Knowledge';", connection);
-            var result = checkCommand.ExecuteScalar();
-
-            if (result == null)
-            {
-                Console.WriteLine("🛠 Setting up knowledge base...");
-                string sql = File.ReadAllText(sqlPath);
-
-                using var command = new SQLiteCommand(sql, connection);
-                command.ExecuteNonQuery();
-
-                Console.WriteLine("✅ Knowledge base created and populated.");
-            }
-            else
-            {
-                Console.WriteLine("📚 Knowledge base loaded.");
+                // 2) Read & execute your schema + seed script
+                var sql = File.ReadAllText(SqlFile);
+                using var conn = new SQLiteConnection($"Data Source={DbFile};Version=3;");
+                conn.Open();
+                using var cmd = new SQLiteCommand(sql, conn);
+                cmd.ExecuteNonQuery();
             }
         }
     }
