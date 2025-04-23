@@ -1,81 +1,94 @@
 # ST10166526_PROG2A_PART1
-# 🛡️ Cybersecurity Awareness Bot
+# CyberSecurityBot
 
-A beginner-friendly **C# console application** that uses **audio**, **ASCII art**, and **interactive chat** to teach essential cybersecurity tips in a fun and engaging way.
+![.NET Build & Test](https://github.com/<your-username>/ST10166526_PROG2A_PART1/actions/workflows/dotnet.yml/badge.svg)
 
----
+A **console-based** cybersecurity assistant built in C# and .NET, featuring:
 
-## 🎯 Project Overview
-
-This chatbot helps users learn about common cyber threats like phishing, weak passwords, unsafe Wi-Fi, and more — using simple language and instant feedback.
-
----
-
-## ✨ Features
-
-- 🔊 Plays a **voice greeting** (`greeting.wav`)
-- 🎨 Displays a colorful **ASCII art logo**
-- 🧑‍💻 Accepts name input for personalized welcome
-- 🤖 Responds to common **cybersecurity questions**
-- ⚠️ Warns about invalid or unclear questions
-- 🎨 Uses **colored console text** for clarity
-- 🧪 Integrated with **GitHub Actions** for CI
-- 🗃️ Clean file structure and `.gitignore` setup
+- **Voice & Typing Greeting**: Plays `greeting.wav` while typing a welcome message
+- **ASCII-Art Banner**: Displays `ascii_logo.txt` on startup
+- **Typing Effect**: All responses are typed out character-by-character
+- **SQLite Knowledge Base**: Q&A stored in `knowledge.db` seeded from `CreateDB.sql`
+- **Intelligent Matching**: Keyword-based category routing + fuzzy text similarity
+- **Contextual Memory**: Multi-step follow-ups (e.g., “What else can I do?”)
+- **Slash Commands**:
+  - `/list`: Show all available topics
+  - `/add`: Add new Q&A entries interactively
+  - `/history`: View previous inputs
+  - `/reset`: Clear conversation memory
 
 ---
 
-## 🚀 To Run
+## 📸 Screenshots
 
-```bash
-cd CyberSecurityBot
-dotnet restore
-dotnet run
+> ![Alt text](C:\Users\Client\Documents\CyberSecurityBot\docs\All_checks_passed.png)
+> ![Alt text](C:\Users\Client\Documents\CyberSecurityBot\docs\CheckedRefresh.png)
 
 
-📂 File Structure
-CyberSecurityBot/
-├── Program.cs                 # Main bot logic
-├── greeting.wav              # Audio greeting
-├── ascii_logo.txt            # Logo displayed at launch
-├── .gitignore                # Git exclusions
-├── .github/workflows/        # CI setup
-│   └── dotnet.yml
+---
 
+## 🛠️ Setup & Run Locally
 
-💡 Example Questions
-You can ask:
+1. **Clone the repository**
 
-"How do I create a strong password?"
+   ```bash
+   git clone https://github.com/st10166526/ST10166526_PROG2A_PART1.git
+   cd ST10166526_PROG2A_PART1
+   ```
 
-"What is phishing?"
+2. **Ensure required files exist**:
+   - `greeting.wav`
+   - `ascii_logo.txt`
+   - `CreateDB.sql` (database schema & seed)
 
-"Should I use 2FA?"
+3. **Build and run** (first run auto-creates `knowledge.db`):
 
-"Can I trust public Wi-Fi?"
+   ```bash
+   dotnet restore
+   dotnet build
+   dotnet run
+   ```
 
-Or type "exit" to leave the chatbot.
+4. **Interact**:
+   - Answer the name prompt
+   - Ask questions like:
+     - `What is phishing?`
+     - `How do I remove malware?`
+   - Use slash commands:
+     - `/list`, `/add`, `/history`, `/reset`
 
-✅ GitHub Actions CI
-This project uses GitHub Actions to run:
+---
 
-🔧 Build and restore packages
+## 🔍 Demonstration Scenarios
 
-✅ Compile and verify with .NET SDK
+1. **Basic Q&A**: Ask `What is phishing?` or `How are you?`
+2. **Database Topics**: `What is WPA3?`, `What is spear phishing?`
+3. **Add New Entry**: `/add` and verify via `/list`
+4. **Contextual Follow-up**:
+   ```
+   You: I think I got hacked
+   Bot: [step1 recovery advice]
+   You: What else can I do?
+   Bot: [step2 recovery advice]
+   ```
+5. **History & Reset**: `/history` then `/reset`
 
-🔄 Ensures reliability and code quality
+---
 
-🙌 Made With
-💻 C# (.NET)
+## 📂 Project Structure
 
-🔉 System.Media
-
-🎨 Console color formatting
-
-❤️ Passion for teaching cybersecurity
-
-🔐 Author
-Aidan Causton
-Cybersecurity Enthusiast • Developer • AI Explorer
-GitHub
-
-Stay safe. Stay smart. And never click that suspicious link. 😉
+```
+├── CyberSecurityBot.sln
+├── Program.cs
+├── KnowledgeBase.cs
+├── DatabaseSetup.cs
+├── CreateDB.sql
+├── ascii_logo.txt
+├── greeting.wav
+├── README.md
+└── docs
+    └── screenshots
+        ├── ci_green_check.png
+        ├── greeting_typing.gif
+        └── console_run.png
+```
