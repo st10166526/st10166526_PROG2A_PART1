@@ -6,23 +6,35 @@ namespace CyberSecurityBot
 {
     public static class DatabaseSetup
     {
-        private const string DbFile  = "knowledge.db";
-        private const string SqlFile = "CreateDB.sql";
+    private const string DbFile = "knowledge.db";
+    private const string SqlScript = "CreateDB.sql";
 
-        public static void Initialize()
-        {
-            if (!File.Exists(DbFile))
-            {
-                // 1) Create empty DB
-                SQLiteConnection.CreateFile(DbFile);
+    public static void Initialize()
+{
+    var needsSeeding = !File.Exists(DbFile)
+                   || !TableExists("Knowledge");
 
-                // 2) Read & execute your schema + seed script
-                var sql = File.ReadAllText(SqlFile);
-                using var conn = new SQLiteConnection($"Data Source={DbFile};Version=3;");
-                conn.Open();
-                using var cmd = new SQLiteCommand(sql, conn);
-                cmd.ExecuteNonQuery();
-            }
-        }
+    if (!needsSeeding)
+        return;
+
+    var script = File.ReadAllText(SqlScript);
+    using var conn = new SQLiteConnection($"Data Source={DbFile};");
+    conn.Open();
+    using var cmd = new SQLiteCommand(script, conn);
+    cmd.ExecuteNonQuery();
+}
+
+private static bool TableExists(string tableName)
+{
+    using var conn = new SQLiteConnection($"Data Source={DbFile};");
+    conn.Open();
+
+    using var cmd = conn.CreateCommand();
+    cmd.CommandText = 
+      "SELECT count(*) FROM sqlite_master WHERE type='table' AND name=@t;";
+    cmd.Parameters.AddWithValue("@t", tableName);
+
+    return Convert.ToInt32(cmd.ExecuteScalar()!) > 0;
+}
     }
 }
