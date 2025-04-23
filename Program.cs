@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Media;
+using System.Collections.Generic;
 using CyberSecurityBot;
 
 namespace CyberSecurityBot
@@ -30,9 +31,9 @@ namespace CyberSecurityBot
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.Write("\nYou: ");
                 Console.ResetColor();
-                string question = (Console.ReadLine() ?? string.Empty).Trim();
+                string input = (Console.ReadLine() ?? string.Empty).Trim();
 
-                if (string.IsNullOrEmpty(question))
+                if (string.IsNullOrEmpty(input))
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine("⚠️ Please ask a question.");
@@ -40,7 +41,7 @@ namespace CyberSecurityBot
                     continue;
                 }
 
-                if (question.Equals("exit", StringComparison.OrdinalIgnoreCase))
+                if (input.Equals("exit", StringComparison.OrdinalIgnoreCase))
                 {
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("\n👋 Goodbye! Stay cyber safe out there.");
@@ -48,7 +49,37 @@ namespace CyberSecurityBot
                     break;
                 }
 
-                string answer = KnowledgeBase.GetAnswer(question);
+                if (input.Equals("/list", StringComparison.OrdinalIgnoreCase))
+                {
+                    PrintDivider("🧠 I can help with these topics:");
+                    var topics = KnowledgeBase.GetAllQuestions();
+                    foreach (var topic in topics)
+                    {
+                        Console.WriteLine($"• {topic}");
+                    }
+                    PrintDivider();
+                    continue;
+                }
+
+                if (input.Equals("/add", StringComparison.OrdinalIgnoreCase))
+                {
+                    PrintDivider("📝 Let's add a new topic!");
+
+                    Console.Write("Enter your question keyword: ");
+                    string newQuestion = Console.ReadLine()?.Trim() ?? "";
+
+                    Console.Write("Enter the answer: ");
+                    string newAnswer = Console.ReadLine()?.Trim() ?? "";
+
+                    bool success = KnowledgeBase.InsertEntry(newQuestion, newAnswer);
+                    Console.ForegroundColor = success ? ConsoleColor.Green : ConsoleColor.Red;
+                    Console.WriteLine(success ? "✅ Added successfully!" : "❌ Failed to add the entry.");
+                    Console.ResetColor();
+                    PrintDivider();
+                    continue;
+                }
+
+                string answer = KnowledgeBase.GetAnswer(input);
                 PrintWithTypingEffect(answer);
             }
         }
@@ -108,6 +139,17 @@ namespace CyberSecurityBot
             }
             Console.ResetColor();
         }
+
+        static void PrintDivider(string? title = null)
+        {
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine("\n" + new string('═', 50));
+            if (!string.IsNullOrWhiteSpace(title))
+            {
+                Console.WriteLine($"  {title}");
+                Console.WriteLine(new string('═', 50));
+            }
+            Console.ResetColor();
+        }
     }
 }
-
