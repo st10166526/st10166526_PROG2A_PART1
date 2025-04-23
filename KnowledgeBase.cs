@@ -1,41 +1,45 @@
 using System;
-using System.Collections.Generic;
+using System.Data.SQLite;
 
 namespace CyberSecurityBot
 {
     public static class KnowledgeBase
     {
-        private static readonly Dictionary<string, string> QnA = new(StringComparer.OrdinalIgnoreCase)
-        {
-            { "password", "🔒 Use strong, unique passwords and enable a password manager to help you remember them." },
-            { "phishing", "🎣 Be cautious of emails asking for credentials. Always verify links before clicking." },
-            { "wifi", "📶 Public Wi-Fi is risky. Use a VPN whenever you’re on an open network." },
-            { "update", "⬆️ Keeping software updated patches security flaws and helps keep you safe." },
-            { "2fa", "🔐 Two-Factor Authentication adds a second layer of protection — always enable it!" },
-            { "malware", "🛡️ Use antivirus software, and avoid downloading unknown files or clicking pop-ups." },
-            { "vpn", "🌐 A VPN encrypts your internet traffic, which protects your data from snooping." },
-            { "hacked", "🚨 Disconnect from the internet, run antivirus, and change your passwords immediately." }
-        };
-
-        private static readonly string[] FallbackResponses = new[]
-        {
-            "🤔 I’m not sure about that. Try asking something related to passwords, phishing, or Wi-Fi.",
-            "🔍 That's a tricky one! Could you rephrase it?",
-            "🤖 I don’t know that yet, but I’m learning! Try a different question."
-        };
+        private static readonly string connectionString = "Data Source=knowledge.db;Version=3;";
 
         public static string GetAnswer(string input)
         {
-            foreach (var pair in QnA)
+            using var connection = new SQLiteConnection(connectionString);
+            connection.Open();
+
+            string keyword = input.ToLower();
+            string query = "SELECT Answer FROM Knowledge WHERE LOWER(@keyword) LIKE '%' || LOWER(Question) || '%' LIMIT 1";
+;
+
+            using var command = new SQLiteCommand(query, connection);
+            command.Parameters.AddWithValue("@keyword", keyword);
+
+            using var reader = command.ExecuteReader();
+            if (reader.Read())
             {
-                if (input.Contains(pair.Key, StringComparison.OrdinalIgnoreCase))
-                {
-                    return pair.Value;
-                }
+                return reader.GetString(0);
             }
 
+            return GetFallbackResponse();
+        }
+
+        private static string GetFallbackResponse()
+        {
+            var responses = new[]
+            {
+                "🤔 I’m not sure about that one. Try asking about 2FA, phishing, or VPNs.",
+                "😅 Hmm... can you rephrase your question or try another topic?",
+                "🧠 I'm still learning. Could you try asking about something like 'malware' or 'passwords'?"
+            };
+
             var rand = new Random();
-            return FallbackResponses[rand.Next(FallbackResponses.Length)];
+            return responses[rand.Next(responses.Length)];
         }
     }
 }
+

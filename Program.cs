@@ -1,20 +1,23 @@
 ﻿using System;
 using System.Threading;
 using System.Media;
+using CyberSecurityBot;
 
 namespace CyberSecurityBot
 {
     class Program
     {
+       
         static void Main(string[] args)
         {
+            DatabaseSetup.Initialize();
             Console.Title = "Cybersecurity Awareness Bot";
             PlayGreeting();
             DisplayWelcome();
 
             Console.Write("\nWhat is your name? ");
             Console.ForegroundColor = ConsoleColor.Cyan;
-            string name = Console.ReadLine();
+            string name = Console.ReadLine() ?? "Guest";
             Console.ResetColor();
 
             Console.WriteLine();
@@ -25,7 +28,7 @@ namespace CyberSecurityBot
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.Write("\nYou: ");
                 Console.ResetColor();
-                string question = Console.ReadLine()?.Trim();
+                string question = (Console.ReadLine() ?? string.Empty).Trim();
 
                 if (string.IsNullOrEmpty(question))
                 {
@@ -48,8 +51,19 @@ namespace CyberSecurityBot
         {
             try
             {
-                using SoundPlayer player = new SoundPlayer("greeting.wav");
-                player.PlaySync();
+                if (OperatingSystem.IsWindows())
+                {
+                    
+
+                    using SoundPlayer player = new SoundPlayer("greeting.wav");
+                    player.PlaySync();
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine("⚠️ Audio playback is only supported on Windows.");
+                    Console.ResetColor();
+                }
             }
             catch
             {
