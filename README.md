@@ -21,8 +21,8 @@ A **console-based** cybersecurity assistant built in C# and .NET, featuring:
 
 ## 📸 Screenshots
 
-> ![Checks Passed](C:\Users\Client\Documents\CyberSecurityBot\docs\screenshots\All_checks_passed.png)
-> ![Confirm Checks Passed](C:\Users\Client\Documents\CyberSecurityBot\docs\screenshots\CheckedRefresh.png)
+> ![Checks Passed](docs\screenshots\All_checks_passed.png)
+> ![Confirm Checks Passed](docs\screenshots\CheckedRefresh.png)
 
 
 ---
