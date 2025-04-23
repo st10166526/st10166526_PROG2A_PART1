@@ -13,7 +13,7 @@ namespace CyberSecurityBot
             DatabaseSetup.Initialize();
             Console.Title = "Cybersecurity Awareness Bot";
 
-            string greetingText = "Hello! Welcome to the Cybersecurity Awareness Bot. Let's help you stay safe online.";
+            string greetingText = "Hello! Welcome to the Cybersecurity Awareness Bot! I am here to help you stay informed, and safe online.";
             PlayGreetingWithText(greetingText);
 
             DisplayWelcome();

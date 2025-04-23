@@ -8,7 +8,7 @@ namespace CyberSecurityBot
     {
         private static readonly string connectionString = "Data Source=knowledge.db;Version=3;";
 
-        public static string GetAnswer(string input)
+public static string GetAnswer(string input)
 {
     using var connection = new SQLiteConnection(connectionString);
     connection.Open();
@@ -20,7 +20,22 @@ namespace CyberSecurityBot
     string bestAnswer = GetFallbackResponse();
     int highestScore = 0;
 
-    string[] inputWords = input.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+    // Define stopwords to ignore in scoring
+    var stopwords = new HashSet<string>
+    {
+        "how", "do", "does", "is", "are", "the", "my", "a", "an", "can", "you", "i", "to", "for", "in", "on", "of", "what", "with", "your", "me", "make", "from"
+    };
+
+    // Filtered keywords from user input
+    string[] inputWords = input.ToLower()
+        .Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+    var filteredWords = new List<string>();
+    foreach (string word in inputWords)
+    {
+        if (!stopwords.Contains(word))
+            filteredWords.Add(word);
+    }
 
     while (reader.Read())
     {
@@ -28,7 +43,7 @@ namespace CyberSecurityBot
         string answer = reader.GetString(1);
 
         int score = 0;
-        foreach (string word in inputWords)
+        foreach (string word in filteredWords)
         {
             if (question.Contains(word))
                 score++;
@@ -43,6 +58,7 @@ namespace CyberSecurityBot
 
     return bestAnswer;
 }
+
 
 
         public static List<string> GetAllQuestions()
