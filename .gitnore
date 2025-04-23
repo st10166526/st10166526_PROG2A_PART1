@@ -1,0 +1,27 @@
+# Ignore build artifacts
+bin/
+obj/
+
+# Ignore Visual Studio settings
+.vscode/
+*.user
+*.suo
+
+# Ignore Mac or system files
+.DS_Store
+Thumbs.db
+
+# Ignore temporary files
+*.log
+*.tmp
+
+# Ignore compiled output
+*.dll
+*.exe
+*.pdb
+
+# Ignore test results
+TestResult.xml
+
+# Ignore secrets (if ever added)
+*.env
