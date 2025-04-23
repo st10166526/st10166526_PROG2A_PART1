@@ -9,6 +9,9 @@ namespace CyberSecurityBot
 {
     class Program
     {
+        // You can tweak this to slow down or speed up the greeting text
+        private const int GREETING_TYPING_DELAY = 55;
+
         // Conversation memory
         static List<string> conversationHistory = new();
         static string lastTopic = string.Empty;
@@ -18,28 +21,33 @@ namespace CyberSecurityBot
             DatabaseSetup.Initialize();
             Console.Title = "Cybersecurity Awareness Bot";
 
-            // Greeting
+            // 1. Audio + Typed Greeting
             string greetingText = "Hello! Welcome to the Cybersecurity Awareness Bot. I'm here to help you stay informed, and safe online.";
-            PlayGreetingWithText(greetingText);
+            PlayGreetingWithText(greetingText, GREETING_TYPING_DELAY);
 
+            // 2. ASCII Banner
             DisplayWelcome();
 
-            // Ask name
+            // 3. Name & Personalized Welcome
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Write("\nWhat is your name? ");
             Console.ResetColor();
-            string name = Console.ReadLine() ?? "Guest";
+            string name = Console.ReadLine()?.Trim() ?? "Guest";
 
             Console.WriteLine();
-            PrintWithTypingEffect($"Hello {name}, I'm your friendly cybersecurity assistant!\nType a question, or 'exit' to quit.\n");
+            PrintWithTypingEffect(
+                $"Hello {name}, I'm your friendly cybersecurity assistant!\n" +
+                $"Type a question (e.g. \"How are you?\"), or 'exit' to quit.\n"
+            );
 
-            // Main loop
+            // 4. Main Loop
             while (true)
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.Write("\nYou: ");
                 Console.ResetColor();
-                string input = (Console.ReadLine() ?? string.Empty).Trim();
+                string input = Console.ReadLine()?.Trim() ?? "";
+
                 if (string.IsNullOrEmpty(input))
                 {
                     Warn("Please ask a question.");
@@ -48,36 +56,40 @@ namespace CyberSecurityBot
 
                 conversationHistory.Add(input);
 
+                // Exit
                 if (input.Equals("exit", StringComparison.OrdinalIgnoreCase))
                 {
                     Success("Goodbye! Stay cyber safe out there.");
                     break;
                 }
+
+                // List topics
                 if (input.Equals("/list", StringComparison.OrdinalIgnoreCase))
                 {
                     PrintDivider("🧠 I can help with these topics:");
-                    foreach (var topic in KnowledgeBase.GetAllQuestions())
+                    foreach (var topic in KnowledgeBase.GetAllQuestions())  // Ensure this uses SELECT DISTINCT
                         Console.WriteLine($"• {topic}");
                     PrintDivider();
                     continue;
                 }
+
+                // Add new Q&A
                 if (input.Equals("/add", StringComparison.OrdinalIgnoreCase))
                 {
                     PrintDivider("📝 Add a new topic");
                     Console.Write("Question keyword: ");
-                    string q = Console.ReadLine()?.Trim() ?? string.Empty;
+                    string q = Console.ReadLine()?.Trim() ?? "";
                     Console.Write("Answer: ");
-                    string a = Console.ReadLine()?.Trim() ?? string.Empty;
+                    string a = Console.ReadLine()?.Trim() ?? "";
 
                     bool ok = KnowledgeBase.InsertEntry(q, a);
-                    if (ok)
-                        Success("Added successfully!");
-                    else
-                        Warn("Failed to add entry.");
-                    
+                    if (ok) Success("Added successfully!");
+                    else    Warn("Failed to add entry.");
                     PrintDivider();
                     continue;
                 }
+
+                // Clear memory
                 if (input.Equals("/reset", StringComparison.OrdinalIgnoreCase))
                 {
                     lastTopic = string.Empty;
@@ -85,6 +97,8 @@ namespace CyberSecurityBot
                     Info("Memory cleared.");
                     continue;
                 }
+
+                // Show history
                 if (input.Equals("/history", StringComparison.OrdinalIgnoreCase))
                 {
                     PrintDivider("🕘 Conversation History");
@@ -94,22 +108,22 @@ namespace CyberSecurityBot
                     continue;
                 }
 
-                // Context-aware input
+                // Context-aware follow-ups
                 string combined = input;
                 if (IsVague(input) && !string.IsNullOrWhiteSpace(lastTopic) && ShouldCombine(input, lastTopic))
                     combined = lastTopic + " " + input;
 
-                // Get and print answer
+                // Get answer
                 string answer = KnowledgeBase.GetAnswer(combined);
                 PrintWithTypingEffect(answer);
 
-                // Update lastTopic if non-command and substantial
+                // Remember for next context
                 if (!input.StartsWith("/") && input.Length > 5)
                     lastTopic = input;
             }
         }
 
-        static void PlayGreetingWithText(string message)
+        static void PlayGreetingWithText(string message, int delay)
         {
             var audioThread = new Thread(() =>
             {
@@ -127,7 +141,7 @@ namespace CyberSecurityBot
                 }
             });
             audioThread.Start();
-            PrintWithTypingEffect(message, 35);
+            PrintWithTypingEffect(message, delay);
             audioThread.Join();
         }
 
@@ -147,11 +161,15 @@ namespace CyberSecurityBot
 
         static void PrintWithTypingEffect(string msg, int delay = 25)
         {
-            foreach (char c in msg) { Console.Write(c); Thread.Sleep(delay); }
+            foreach (char c in msg)
+            {
+                Console.Write(c);
+                Thread.Sleep(delay);
+            }
             Console.WriteLine();
         }
 
-        static void PrintDivider(string? title = null)
+        static void PrintDivider(string title = null)
         {
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("\n" + new string('═', 50));
@@ -167,9 +185,7 @@ namespace CyberSecurityBot
         {
             string[] vague = { "what", "how", "why", "can", "should", "is", "are", "do" };
             var lw = input.ToLower();
-            foreach (var v in vague)
-                if (lw.StartsWith(v))
-                    return true;
+            foreach (var v in vague) if (lw.StartsWith(v)) return true;
             return input.Length < 8;
         }
 
