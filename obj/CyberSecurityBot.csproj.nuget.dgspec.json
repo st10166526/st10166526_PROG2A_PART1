@@ -50,13 +50,13 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
-            "System.Data.SQLite": {
+            "System.Data.SQLite.Core": {
               "target": "Package",
               "version": "[1.0.119, )"
             },
             "System.Windows.Extensions": {
               "target": "Package",
-              "version": "[9.0.4, )"
+              "version": "[9.0.5, )"
             }
           },
           "imports": [

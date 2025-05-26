@@ -6,35 +6,33 @@ namespace CyberSecurityBot
 {
     public static class DatabaseSetup
     {
-    private const string DbFile = "knowledge.db";
-    private const string SqlScript = "CreateDB.sql";
+        private static readonly string BasePath = AppContext.BaseDirectory;
+        private static readonly string DbFile    = Path.Combine(BasePath, "knowledge.db");
+        private static readonly string SqlScript = Path.Combine(BasePath, "CreateDB.sql");
+        private static bool _initialized;
 
-    public static void Initialize()
-{
-    var needsSeeding = !File.Exists(DbFile)
-                   || !TableExists("Knowledge");
+        public static void Initialize()
+        {
+            if (_initialized) return;
 
-    if (!needsSeeding)
-        return;
+            // Delete old DB so we always start clean
+            if (File.Exists(DbFile))
+                File.Delete(DbFile);
 
-    var script = File.ReadAllText(SqlScript);
-    using var conn = new SQLiteConnection($"Data Source={DbFile};");
-    conn.Open();
-    using var cmd = new SQLiteCommand(script, conn);
-    cmd.ExecuteNonQuery();
-}
+            // Read your fixed SQL script in full
+            var script = File.ReadAllText(SqlScript);
 
-private static bool TableExists(string tableName)
-{
-    using var conn = new SQLiteConnection($"Data Source={DbFile};");
-    conn.Open();
+            using var conn = new SQLiteConnection($"Data Source={DbFile};");
+            conn.Open();
 
-    using var cmd = conn.CreateCommand();
-    cmd.CommandText = 
-      "SELECT count(*) FROM sqlite_master WHERE type='table' AND name=@t;";
-    cmd.Parameters.AddWithValue("@t", tableName);
+            // Execute the entire script (CREATE + multi-row INSERT) at once
+            using var cmd = new SQLiteCommand(script, conn);
+            cmd.ExecuteNonQuery();
 
-    return Convert.ToInt32(cmd.ExecuteScalar()!) > 0;
-}
+            _initialized = true;
+        }
     }
 }
+
+
+

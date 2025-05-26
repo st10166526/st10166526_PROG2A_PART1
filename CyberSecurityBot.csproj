@@ -7,9 +7,34 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <!-- Copy your data & media into bin/Debug/net9.0 -->
   <ItemGroup>
-    <PackageReference Include="System.Data.SQLite" Version="1.0.119" />
-    <PackageReference Include="System.Windows.Extensions" Version="9.0.4" />
+    <Content Include="CreateDB.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="knowledge.db">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ascii_logo.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="greeting.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <!-- If you really have other project references, list them here -->
+  <!-- Otherwise you can remove this entire ItemGroup -->
+  <ItemGroup>
+    <!--<ProjectReference Include="..\CyberSecurityBot.Core\CyberSecurityBot.Core.csproj" />-->
+    <!--<ProjectReference Include="..\CyberSecurityBot.UI\CyberSecurityBot.UI.csproj" />-->
+  </ItemGroup>
+
+  <!-- NuGet packages -->
+  <ItemGroup>
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.119" />
+    <PackageReference Include="System.Windows.Extensions" Version="9.0.5" />
   </ItemGroup>
 
 </Project>
+
