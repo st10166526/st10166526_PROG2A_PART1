@@ -1,58 +1,104 @@
--- drop any old version
+-- DROP old table if present
 DROP TABLE IF EXISTS Knowledge;
 
--- note: column is now Keyword, not Question
+-- CREATE table with columns Keyword, Answer, Category
 CREATE TABLE Knowledge (
-    Id       INTEGER PRIMARY KEY AUTOINCREMENT,
-    Keyword  TEXT    NOT NULL,
-    Answer   TEXT    NOT NULL,
-    Category TEXT    NOT NULL
+  Id       INTEGER PRIMARY KEY AUTOINCREMENT,
+  Keyword  TEXT    NOT NULL,
+  Answer   TEXT    NOT NULL,
+  Category TEXT    NOT NULL
 );
 
--- seed your data; NO trailing comma on the last row
+-- SEED data: a massive, in depth set of tips
 INSERT INTO Knowledge (Keyword, Answer, Category) VALUES
-('password', 'Use strong, unique passwords for each account. A password manager helps.', 'Password'),
-('how do i make a strong password', 'Use a mix of upper/lowercase, numbers, and symbols. Avoid personal info.', 'Password'),
-('is my password safe', 'Try testing it at haveibeenpwned.com. Use long and unpredictable phrases.', 'Password'),
-('phishing', 'Never click suspicious links. Verify sender details and spelling.', 'Phishing'),
-('what is phishing', 'Phishing is when attackers trick you into giving up sensitive info via fake emails or websites.', 'Phishing'),
-('how do i spot a phishing email', 'Look for urgent tone, unknown senders, and weird links or attachments.', 'Phishing'),
-('2fa', 'Two-Factor Authentication adds a layer of security. Always enable it!', '2FA'),
-('should i use 2fa', 'Yes, it makes your account much harder to hack.', '2FA'),
-('malware', 'Malware includes viruses and spyware. Use antivirus software and avoid sketchy downloads.', 'Malware'),
-('i think i have malware', 'Disconnect from internet, scan with antivirus, and change passwords.', 'Malware'),
-('update', 'Keep your software and OS updated to patch vulnerabilities.', 'Updates'),
-('should i update my apps', 'Yes. Updates often fix bugs and security holes.', 'Updates'),
-('wifi', 'Avoid using public Wi-Fi for private info. Use a VPN if you have to.', 'Wi-Fi'),
-('is public wifi dangerous', 'Yes. Hackers can intercept your traffic.', 'Wi-Fi'),
-('i think i got hacked', 'Change your passwords immediately, run antivirus, and enable 2FA.', 'Breach'),
-('how do i know if i was hacked', 'Check for unknown devices, strange activity, and unexpected login attempts.', 'Breach'),
-('vpn', 'A VPN encrypts your data. Use it on public Wi-Fi or when traveling.', 'Network'),
-('what does a vpn do', 'It hides your IP and secures your traffic.', 'Network'),
-('facebook security', 'Enable 2FA, check active sessions, and be cautious of friend requests.', 'Social Media'),
-('instagram scam', 'Dont click on “brand deals” or giveaways from unknown accounts.', 'Social Media'),
-('how do i secure my email', 'Use a strong password, enable two factor authentication, and review login activity regularly.', 'Account Security'),
-('is it safe to reuse passwords', 'No, never reuse passwords. Use a unique one for every account to prevent credential stuffing.', 'Account Security'),
-('what is credential stuffing', 'When attackers use stolen credentials from one site to try and access accounts on other sites.', 'Account Security'),
-('what is social engineering', 'The act of manipulating people into giving up confidential information.', 'Scams & Social Engineering'),
-('how do i recognize a scam call', 'Scam calls often demand urgent action or payment. Always verify through official sources before responding.', 'Scams & Social Engineering'),
-('what is vishing', 'Voice phishing. A phone scam where attackers impersonate trusted entities to steal personal information.', 'Scams & Social Engineering'),
-('is incognito mode safe', 'Incognito mode hides your local history but doesnt protect you from online tracking or malware.', 'Secure Browsing'),
-('how do i know if a website is safe', 'Check for HTTPS, a padlock icon, and verify the website address is correct.', 'Secure Browsing'),
-('are public charging stations safe', 'Avoid them. Use your own power bank or a USB data blocker to prevent juice jacking.', 'Mobile Security'),
-('how do i secure my phone', 'Use a screen lock, keep software updated, only download from official app stores, and enable remote wipe features.', 'Mobile Security'),
-('what is ransomware', 'A type of malware that locks your files and demands payment. Recover from backups if possible—never pay.', 'Malware & Threats'),
-('how do i know if i have a virus', 'Symptoms include slow performance, pop-ups, and unknown programs. Run antivirus software to confirm.', 'Malware & Threats'),
-('what is spyware', 'Spyware secretly collects data from your device, often bundled with suspicious downloads or fake apps.', 'Malware & Threats'),
-('how often should i back up my files', 'Back up important data at least once a week. Use secure cloud storage or offline external drives.', 'Updates & Backups'),
-('why are software updates important', 'Updates fix vulnerabilities that hackers can exploit to gain access to your system.', 'Updates & Backups'),
-('how can i stay secure at work', 'Lock your screen when away, avoid unknown USB devices, report suspicious emails, and follow IT policies.', 'Workplace Security'),
-('what is data classification', 'Label data by sensitivity (e.g., public, internal, confidential) to protect it correctly.', 'Workplace Security'),
-('how do i secure a website', 'Use HTTPS, validate user input, sanitize data, and keep dependencies updated.', 'Developer Tips'),
-('what is sql injection', 'An attack that manipulates database queries via input fields. Use parameterized queries to prevent it.', 'Developer Tips'),
-('what is xss', 'Cross-Site Scripting allows attackers to inject malicious scripts into websites. Always sanitize user input.', 'Developer Tips'),
-('how do i report a cybercrime', 'In South Africa, contact the SAPS Cybercrime Unit or visit www.cybersecurity.gov.za.', 'General'),
-('is antivirus software enough', 'Helpful but not enough. Safe browsing habits and regular updates are just as important.', 'General'),
-('what is a zero-day vulnerability', 'A flaw exploited before a fix is released. Highly dangerous—patch ASAP.', 'General'),
-('how can i learn cybersecurity', 'Try platforms like TryHackMe, Hack The Box, and Cybrary. Practice ethical hacking legally.', 'General')
+-- PASSWORD SECURITY
+('password', 'Use strong unique passwords at least 12 characters long', 'Password Security'),
+('password manager', 'Use a password manager to generate and store complex passwords securely', 'Password Security'),
+('password reuse', 'Never reuse passwords across different accounts', 'Password Security'),
+('password update', 'Change passwords periodically and immediately after any breach', 'Password Security'),
+
+-- PHISHING AWARENESS
+('phishing', 'Do not click links in unsolicited emails without verifying the sender', 'Phishing Awareness'),
+('spear phishing', 'Be wary of highly personalized emails asking for sensitive data', 'Phishing Awareness'),
+('smishing', 'Never respond to unexpected text messages requesting credentials or codes', 'Phishing Awareness'),
+('vishing', 'Verify phone calls asking for personal info by calling the official number', 'Phishing Awareness'),
+('phishing links', 'Hover over links to inspect the actual URL before clicking', 'Phishing Awareness'),
+('phishing attachments', 'Do not open email attachments from unknown or suspicious sources', 'Phishing Awareness'),
+
+-- NETWORK SECURITY
+('wifi', 'Avoid public wifi for sensitive tasks or use a trusted vpn', 'Network Security'),
+('vpn', 'Use a vpn on untrusted networks to encrypt all your traffic', 'Network Security'),
+('network segmentation', 'Separate critical devices on their own network segments', 'Network Security'),
+('firewall', 'Enable and configure your firewall to block unwanted inbound connections', 'Network Security'),
+('secure router', 'Change default router credentials and keep firmware up to date', 'Network Security'),
+
+-- MALWARE DEFENSE
+('antivirus', 'Install reputable antivirus software and keep it updated', 'Malware Defense'),
+('malware scan', 'Run regular full system scans to detect hidden malware', 'Malware Defense'),
+('ransomware', 'Back up your files offline to recover from ransomware without paying', 'Malware Defense'),
+('malware removal', 'If infected use official removal tools or reinstall from clean media', 'Malware Defense'),
+
+-- DATA PROTECTION
+('backup', 'Back up important data at least weekly and store copies offsite', 'Data Protection'),
+('encryption', 'Encrypt sensitive files and use full disk encryption on laptops', 'Data Protection'),
+('secure delete', 'Use secure wipe tools to permanently remove confidential files', 'Data Protection'),
+('data retention', 'Only keep data as long as necessary and then securely delete it', 'Data Protection'),
+
+-- PRIVACY
+('privacy settings', 'Review and tighten privacy settings on social media accounts', 'Privacy'),
+('metadata', 'Remove metadata from documents and images before sharing', 'Privacy'),
+('tracking', 'Install browser extensions to block unwanted trackers and ads', 'Privacy'),
+('data sharing', 'Only share personal information with trusted and verified parties', 'Privacy'),
+
+-- AUTHENTICATION
+('two factor', 'Enable two factor authentication on every service that supports it', 'Authentication'),
+('multi factor', 'Use multi factor with hardware keys or authenticator apps', 'Authentication'),
+('sms 2fa risks', 'Avoid sms based two factor when possible due to sim swap attacks', 'Authentication'),
+
+-- SOFTWARE UPDATES
+('patch', 'Install software and operating system updates promptly', 'Software Updates'),
+('auto update', 'Enable automatic updates to ensure you never miss a security patch', 'Software Updates'),
+('third party updates', 'Update browsers plugins and third party apps regularly', 'Software Updates'),
+
+-- SOCIAL ENGINEERING
+('social engineering', 'Be skeptical of unsolicited requests for information or help', 'Social Engineering'),
+('pretexting', 'Do not trust callers claiming to be from support without verification', 'Social Engineering'),
+('baiting', 'Avoid tempting free offers on usb drives or links from unknown sources', 'Social Engineering'),
+
+-- MOBILE SECURITY
+('mobile lock', 'Use a strong screen lock pin or biometric on your phone', 'Mobile Security'),
+('app store', 'Only install apps from official app store and review permissions', 'Mobile Security'),
+('os updates', 'Keep your mobile operating system up to date', 'Mobile Security'),
+
+-- CLOUD SECURITY
+('cloud backup', 'Encrypt files before uploading to cloud services', 'Cloud Security'),
+('iam', 'Use identity and access management to grant least privilege', 'Cloud Security'),
+('cloud monitoring', 'Enable logging and alerts for unusual activity in cloud accounts', 'Cloud Security'),
+
+-- DEVELOPER SECURITY
+('sql injection', 'Use parameterized queries or prepared statements to prevent sql injection', 'Developer Security'),
+('xss', 'Sanitize and encode all user input to protect against cross site scripting', 'Developer Security'),
+('csrf', 'Implement anti csrf tokens to prevent cross site request forgery', 'Developer Security'),
+('secure coding', 'Follow secure coding guidelines and perform code reviews', 'Developer Security'),
+
+-- INCIDENT RESPONSE
+('incident response', 'Develop and test an incident response plan regularly', 'Incident Response'),
+('forensics', 'Preserve logs and forensic images when investigating a breach', 'Incident Response'),
+('communication plan', 'Establish internal and external communication protocols for incidents', 'Incident Response'),
+
+-- PHYSICAL SECURITY
+('badge', 'Always wear your identification badge in secure facilities', 'Physical Security'),
+('tailgating', 'Do not allow others to follow you into restricted areas', 'Physical Security'),
+('secure desk', 'Lock your workstation when away and secure physical documents', 'Physical Security'),
+
+-- GENERAL TIPS
+('general tips', 'Stay informed about the latest threats and best practices', 'General'),
+('cybersecurity awareness', 'Regularly participate in cybersecurity training and awareness programs', 'General'),
+('reporting', 'Report any suspicious activity to your security team immediately', 'General'),
+('how are you', 'Im doing great—thanks for asking! Ready to talk cybersecurity?', 'General'),
+('what can i ask', 'You can ask me about passwords phishing WiFi malware updates and more!', 'General'),
+('ask help', 'If in doubt contact your it or security team immediately', 'General'),
+('stay aware', 'Stay vigilant and report any suspicious activity without delay', 'General'),
+('exit', 'exit', 'General')
 ;
+

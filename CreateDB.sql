@@ -92,6 +92,11 @@ INSERT INTO Knowledge (Keyword, Answer, Category) VALUES
 ('secure desk', 'Lock your workstation when away and secure physical documents', 'Physical Security'),
 
 -- GENERAL TIPS
+('general tips', 'Stay informed about the latest threats and best practices', 'General'),
+('cybersecurity awareness', 'Regularly participate in cybersecurity training and awareness programs', 'General'),
+('reporting', 'Report any suspicious activity to your security team immediately', 'General'),
+('how are you', 'Im doing great—thanks for asking! Ready to talk cybersecurity?', 'General'),
+('what can i ask', 'You can ask me about passwords phishing WiFi malware updates and more!', 'General'),
 ('ask help', 'If in doubt contact your it or security team immediately', 'General'),
 ('stay aware', 'Stay vigilant and report any suspicious activity without delay', 'General'),
 ('exit', 'exit', 'General')

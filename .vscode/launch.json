@@ -2,11 +2,10 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": ".NET Launch Console",
+      "name": ".NET Core Launch (console)",
       "type": "coreclr",
       "request": "launch",
-      "preLaunchTask": "build",
-      "program": "${workspaceFolder}/bin/Debug/net9.0/CyberSecurityBot.dll",
+      "program": "${workspaceFolder}/bin/Debug/net9.0/CyberSecurityBot.exe",
       "args": [],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
@@ -14,3 +13,4 @@
     }
   ]
 }
+
