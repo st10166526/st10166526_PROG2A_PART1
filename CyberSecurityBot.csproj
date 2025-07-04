@@ -1,36 +1,51 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net9.0</TargetFramework>
+    <!-- Build as a Windows GUI app (no console) -->
+    <OutputType>WinExe</OutputType>
+
+    <!-- Keep targeting .NET 9.0 on Windows -->
+    <TargetFramework>net9.0-windows</TargetFramework>
+
+    <!-- Enable WinForms support -->
+    <UseWindowsForms>true</UseWindowsForms>
+
+    <!-- Your other settings -->
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <!-- Copy your data & media into bin/Debug/net9.0 -->
+  <!-- Copy your data & media into bin/Debug/net9.0-windows/ -->
   <ItemGroup>
+    <!-- Quiz questions CSV -->
+    <Content Include="questions.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+
+    <!-- Database initialization script -->
     <Content Include="CreateDB.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="knowledge.db">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+
+    <!-- ASCII logo art -->
     <Content Include="ascii_logo.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+
+    <!-- Greeting WAV file -->
     <Content Include="greeting.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+
+    <!-- (If you ever include knowledge.db directly) -->
+    <!--
+    <Content Include="knowledge.db">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    -->
   </ItemGroup>
 
-  <!-- If you really have other project references, list them here -->
-  <!-- Otherwise you can remove this entire ItemGroup -->
-  <ItemGroup>
-    <!--<ProjectReference Include="..\CyberSecurityBot.Core\CyberSecurityBot.Core.csproj" />-->
-    <!--<ProjectReference Include="..\CyberSecurityBot.UI\CyberSecurityBot.UI.csproj" />-->
-  </ItemGroup>
-
-  <!-- NuGet packages -->
+  <!-- SQLite & Windows extensions -->
   <ItemGroup>
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.119" />
     <PackageReference Include="System.Windows.Extensions" Version="9.0.5" />
