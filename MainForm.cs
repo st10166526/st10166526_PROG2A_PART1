@@ -145,7 +145,6 @@ namespace CyberSecurityBot
             _tabs.SelectedIndexChanged += (_,__) =>
                 UpdateStatus($"Viewing: {_tabs.SelectedTab.Text}");
 
-            // Add all four tabs
             _tabs.TabPages.Add(CreateChatTab());
             _tabs.TabPages.Add(CreateTasksTab());
             _tabs.TabPages.Add(CreateQuizTab());
@@ -214,7 +213,6 @@ namespace CyberSecurityBot
             _chatSend = CreateAccentButton("Send");
             _chatSend.Click += ChatSend_Click;
 
-            // send on Enter key
             _chatInput.KeyDown += (s, e) =>
             {
                 if (e.KeyCode == Keys.Enter)
@@ -235,15 +233,35 @@ namespace CyberSecurityBot
 
         private void ChatSend_Click(object sender, EventArgs e)
         {
-            var text = _chatInput.Text.Trim();
+            var text  = _chatInput.Text.Trim();
             if (string.IsNullOrEmpty(text) || text == "Type a message...") return;
 
+            var lower = text.ToLowerInvariant();
             _chatInput.Clear();
+
             _chatBox.SelectionColor = Color.Green;
             _chatBox.AppendText($"You: {text}\n");
             _chatBox.ScrollToCaret();
 
-            var (reply,_) = _chatSvc.GetResponse(text);
+            // NLP-style commands:
+            if (lower.Contains("add a task") 
+             || (lower.Contains("remind me") && lower.Contains("task")))
+            {
+                OnAddTask(this, EventArgs.Empty);
+                return;
+            }
+
+            if (lower.Contains("show activity log") 
+             || lower.Contains("what have you done"))
+            {
+                _tabs.SelectedTab = _tabs.TabPages["Activity Log"];
+                UpdateStatus("Viewing: Activity Log");
+                Log("Chat command: Show activity log");
+                return;
+            }
+
+            // fallback to normal bot
+            var (reply, _) = _chatSvc.GetResponse(text);
             _chatBox.SelectionColor = Color.Blue;
             _chatBox.AppendText($"Bot: {reply}\n\n");
             _chatBox.ScrollToCaret();
@@ -483,11 +501,9 @@ namespace CyberSecurityBot
                     sp.PlaySync();
                 }
                 catch { }
-            })
-            { IsBackground = true };
+            }) { IsBackground = true };
             thr.Start();
 
-            // append greeting text immediately
             _chatBox.SelectionFont = new Font("Consolas", 10F);
             _chatBox.SelectionColor = Color.Blue;
             _chatBox.AppendText("Bot: " + msg + "\n\n");
@@ -539,3 +555,4 @@ namespace CyberSecurityBot
         }
     }
 }
+
