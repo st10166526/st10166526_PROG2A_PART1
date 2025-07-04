@@ -214,6 +214,16 @@ namespace CyberSecurityBot
             _chatSend = CreateAccentButton("Send");
             _chatSend.Click += ChatSend_Click;
 
+            // send on Enter key
+            _chatInput.KeyDown += (s, e) =>
+            {
+                if (e.KeyCode == Keys.Enter)
+                {
+                    e.SuppressKeyPress = true;
+                    ChatSend_Click(_chatSend, EventArgs.Empty);
+                }
+            };
+
             inputPanel.Controls.Add(_chatInput, 0, 0);
             inputPanel.Controls.Add(_chatSend, 1, 0);
 
@@ -392,7 +402,6 @@ namespace CyberSecurityBot
             if (_quizAction.Text == "Start Quiz")
             {
                 _totalQuestions = _quizSvc.Questions.Count;
-                _quizProgress.Maximum = _totalQuestions;
                 NextQuizQuestion();
                 _quizAction.Text = "Submit";
             }
@@ -474,12 +483,14 @@ namespace CyberSecurityBot
                     sp.PlaySync();
                 }
                 catch { }
-            });
+            })
+            { IsBackground = true };
             thr.Start();
+
+            // append greeting text immediately
             _chatBox.SelectionFont = new Font("Consolas", 10F);
             _chatBox.SelectionColor = Color.Blue;
             _chatBox.AppendText("Bot: " + msg + "\n\n");
-            thr.Join();
         }
 
         private void DisplayWelcome()
